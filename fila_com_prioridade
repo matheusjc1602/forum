@@ -1,0 +1,222 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include<conio.h>
+#include<stdbool.h>
+#include<locale.h>
+#include<string.h>
+
+typedef struct dados{
+    char nome[40];
+    int prioridade;
+    struct dados *prox;
+}Dados;
+
+typedef struct fila {
+    Dados *inicio;
+    Dados *fim;
+    int quantidade;
+}Fila;
+int contador_prioridade1=0;
+int contador_prioridade2=0;
+int contador_prioridade3=0;
+
+Fila queue;
+/*Inicializa a fila e atribui nulo aos ponteiros que receberao
+endereços dos dados e determina quantidade 0 para informar que
+a lista esta vazia*/
+
+void inicializarFila(Fila *apontador){
+    apontador->inicio = NULL;
+    apontador->fim = NULL;
+    apontador->quantidade = 0;
+    printf("\t\t|Fila Inicializada|\n");
+}
+
+bool vazia(Fila *apontador){
+    return(apontador->inicio == NULL);
+}
+
+void insere(Fila *apontador,char *Nome,int *priori) {
+	Dados *novo = (Dados*)malloc(sizeof(Dados));
+
+	strcpy(novo->nome , Nome);//add nome
+	novo->prioridade = *priori;// add priori
+	novo->prox = NULL;
+
+	if(apontador->inicio == NULL){
+        apontador->inicio = novo;
+        apontador->fim = novo;
+        apontador->quantidade++;
+	}else{
+	    apontador->fim->prox = novo;
+	    apontador->fim = novo;
+	    apontador->quantidade++;
+
+	}
+	printf("\nElemento inserido com sucesso\n");
+
+}
+
+int remove_elemento(Fila * apontador){
+    printf("\nREMOVENDO ELEMENTOS AGUARDE ...\n");
+    if(apontador == NULL) return 0;
+
+    Dados *anterior,*novo = apontador->inicio;
+    if(contador_prioridade1<3){
+    while(novo != NULL && novo->prioridade !=1 && contador_prioridade1 <=3){
+            anterior = novo;
+            novo = novo->prox;
+            if(novo->prioridade == 1){
+                contador_prioridade1++;
+
+            }
+    }
+    }else if(contador_prioridade2<2){
+
+
+    while(novo!= NULL && novo->prioridade !=2 && contador_prioridade2 <=2){
+            anterior = novo;
+            novo = novo->prox;
+            if(novo->prioridade == 2){
+                contador_prioridade2++;
+
+            }
+    }}else{
+    while(novo != NULL && novo->prioridade !=3 && contador_prioridade3<=1){
+            anterior = novo;
+            novo = novo->prox;
+            if(novo->prioridade == 3){
+                contador_prioridade3++;
+
+            }
+    }}
+    if(apontador->inicio == NULL) return 0;
+
+    if(novo == apontador->inicio)
+        apontador->inicio = novo->prox;
+    else
+        anterior->prox = novo->prox;
+
+    free(novo);
+    apontador->quantidade--;
+    return 1;
+}
+
+void exibir_fila(Fila *apontador) {
+	Dados *aux = apontador->inicio;
+    int i=1;
+	if(apontador->inicio==NULL) {
+		printf("\n\tNÃO HÁ MAIS ELEMENTOS NA FILA !!!\n");
+		return;
+	}
+
+	while(aux != NULL) {
+		printf("\n%dº-NOME - %s ",i++, aux->nome);
+		printf("Prioridade   - %d  \n",aux->prioridade);
+        aux = aux->prox;
+	}
+	printf("\nQuantidade de elementos na FILA |%d|\n\n",apontador->quantidade);
+}
+//terminar as prioridades de saida//
+void exibe_muitos(Fila *apontador){
+
+    Dados *aux = apontador->inicio;
+    int i=1,qtd_elementos = 0;
+	if(apontador->inicio==NULL) {
+		printf("\tERRO: Fila vazia");
+		return;
+	}
+
+	while(aux != NULL && qtd_elementos <6) {
+		printf("\n %dº-NOME: %s ",i++, aux->nome);
+		printf("Prioridade:  %d \n",aux->prioridade);
+		aux = aux->prox;
+		qtd_elementos++;
+
+    }
+    if(qtd_elementos < 5){
+        printf("\nNão há mais elementos\n");
+	}
+}
+//Menu das opções//
+void menu() {
+	printf("\n\t##############################################");
+	printf("\n\t#               MENU - FILA                  #");
+	printf("\n\t#                                            #");
+	printf("\n\t#	  Digite a opção desejada            #");
+	printf("\n\t#                                            #");
+	printf("\n\t#	 1 = Inserir na FILA                 #");
+	printf("\n\t#	 2 = Remover da FILA                 #");
+	printf("\n\t#	 3 = Exibir FILA                     #");
+	printf("\n\t#	 4 = Exibir 6 próximos da FILA       #");
+	printf("\n\t#	 0 = Sair                            #");
+	printf("\n\t#                                            #");
+	printf("\n\t##############################################");
+	printf("\t\n\n");
+}
+
+int main(){
+    setlocale(LC_ALL,"portuguese");
+
+    int res,op,valor=0;
+    bool i=true;
+    char nome[40];
+
+    inicializarFila(&queue);
+
+    do{
+            menu();
+            op = getche()-'0';
+            switch(op){
+                case 1:
+                    system ("cls");
+                    printf("\nDigite o nome a ser inserido :\n");
+                    fgets(nome,40,stdin);
+                    system("cls");
+                    do{
+                        system("cls");
+                        printf("\nDigite a prioridade(De 1 a 3):\n");
+                        scanf("%d",&valor);
+                    }while(valor < 1 || valor > 3);
+
+                    insere(&queue,nome,&valor);
+                    setbuf(stdin,NULL);
+                    break;
+
+                case 2:
+                    res = remove_elemento(&queue);
+                    if(res == 1){
+
+                        printf("\nITEM REMOVIDO\n");
+                    }else{
+
+                        printf("\n\tFILA VAZIA\n");
+                    }
+                    break;
+
+                case 3:
+                    system ("cls");
+                    exibir_fila(&queue);
+                    break;
+
+                case 4:
+                    system ("cls");
+                    exibe_muitos(&queue);
+                    break;
+
+                case 0:
+                    system ("cls");
+                    printf("\n\nAté Logo\n");
+                    i = false;
+                    return 0;
+
+                default:
+                    system ("cls");
+                    printf("\nOPÇÃO INVÁLIDA\n");
+                    menu();
+        }
+    }while(op != 0);
+    system("pause");
+    return 0;
+}
+
